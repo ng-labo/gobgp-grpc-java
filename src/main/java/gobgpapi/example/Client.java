@@ -1,32 +1,27 @@
 package gobgpapi.example;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.protobuf.Message;
 import com.google.protobuf.Any;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import gobgpapi.GobgpApiGrpc;
-import gobgpapi.GobgpApiGrpc.GobgpApiStub;
+//import gobgpapi.GobgpApiGrpc.GobgpApiStub;
 import gobgpapi.GobgpApiGrpc.GobgpApiBlockingStub;
 import gobgpapi.Gobgp;
 import gobgpapi.Attribute;
-import io.grpc.stub.StreamObserver;
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class Client {
-    private static final Logger logger = Logger.getLogger(Client.class.getName());
+
     private final GobgpApiBlockingStub blockingStub;
-    private final GobgpApiStub newStub;
+
+    //private final GobgpApiStub newStub;
+
     public Client(Channel channel) {
         blockingStub = GobgpApiGrpc.newBlockingStub(channel);
-        newStub = GobgpApiGrpc.newStub(channel);
+        //newStub = GobgpApiGrpc.newStub(channel);
     }
+
     private Gobgp.Family family(int ver) {
         return Gobgp.Family.newBuilder().setAfi((ver==4) ? Gobgp.Family.Afi.AFI_IP : Gobgp.Family.Afi.AFI_IP6).setSafi(Gobgp.Family.Safi.SAFI_FLOW_SPEC_UNICAST).build();
     }
@@ -91,6 +86,7 @@ public class Client {
         build_rules(rules, 4, new long[] {1, 1900, 1, 11211});
         Any nlri = build_nlri(rules);
 
+        // make path
         Gobgp.Path.Builder path_builder = Gobgp.Path.newBuilder();
         path_builder.setFamily(family4);
         path_builder.setNlri(nlri);
@@ -109,11 +105,16 @@ public class Client {
     }
 
     private static final String target = "localhost:50051";
-    public static void process(int arg) {
+
+    public static void process(String cmd) {
+        if (!"add".equals(cmd) && !"del".equals(cmd)){
+            System.out.println("indicate 'add' or 'del'");
+            return;
+        }
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         try {
             Client client = new Client(channel);
-            if(arg==0){
+            if("add".equals(cmd)){
                 System.out.println("call addPath");
                 client.run_addPath(client.build_path());
             }else{
@@ -127,8 +128,8 @@ public class Client {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        process(0); // addPath
-        // process(1); // delPath
+        process("add"); // addPath
+        // process("del"); // delPath
         System.out.println("done");
     }
 
