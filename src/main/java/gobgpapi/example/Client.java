@@ -67,27 +67,24 @@ public class Client {
     private Gobgp.Path.Builder build_pattrs(Gobgp.Path.Builder builder, Gobgp.Family family, Any nlri, int rate, int origin) {
         builder.addPattrs(Any.pack(build_action(rate)));
 
-        builder.addPattrs(Any.pack(Attribute.MpReachNLRIAttribute.newBuilder().setFamily(family).addNlris(nlri).addNextHops("0.0.1.0").build()));
+        builder.addPattrs(Any.pack(Attribute.MpReachNLRIAttribute.newBuilder().setFamily(family).addNlris(nlri).addNextHops("0.0.0.0").build()));
 
         builder.addPattrs(Any.pack(Attribute.OriginAttribute.newBuilder().setOrigin(origin).build()));
 
         return builder;
     }
 
-
-    public void process() {
-        Gobgp.GetBgpResponse r = blockingStub.getBgp(Gobgp.GetBgpRequest.newBuilder().build());
-      
-        System.out.println(r.getGlobal());
-        com.google.protobuf.Descriptors.Descriptor descriptor = r.getGlobal().getDescriptorForType();
-        //for (com.google.protobuf.Descriptors.FieldDescriptor field : descriptor.getFields()) {
-        //    System.out.println("field=" + field);
-        //}
-        //System.out.println(descriptor.getField(descriptor.findFieldByName("as")));
-        //System.out.println(descriptor.getField("gobgpapi.Global.as"));
+    private Gobgp.Path build_path() {
+        // family
         Gobgp.Family family4 = family(4);
 
+        // retrive BgpResponse
+        Gobgp.GetBgpResponse r = blockingStub.getBgp(Gobgp.GetBgpRequest.newBuilder().build());
+        int asn = r.getGlobal().getAs();
+
+        // make nlri
         List<Any> rules = new java.util.ArrayList<Any>();
+
         build_prefixes(rules, 1, "1.2.3.4");
         build_prefixes(rules, 2, "5.6.7.8");
         build_rules(rules, 3, new long[] {1, 17});
@@ -98,26 +95,41 @@ public class Client {
         path_builder.setFamily(family4);
         path_builder.setNlri(nlri);
         build_pattrs(path_builder, family4, nlri, 0, 0);
-        path_builder.setSourceAsn(65001);
+        path_builder.setSourceAsn(asn);
 
-        Gobgp.Path path = path_builder.build();
-
-
-        blockingStub.addPath(Gobgp.AddPathRequest.newBuilder().setTableType(Gobgp.TableType.GLOBAL).setPath(path).build());
-        System.out.println(path);
-        
-
+        return path_builder.build();
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        String target = "localhost:50051";
+    public void run_addPath(Gobgp.Path path) {
+        blockingStub.addPath(Gobgp.AddPathRequest.newBuilder().setTableType(Gobgp.TableType.GLOBAL).setPath(path).build());
+    }
+
+    public void run_delPath(Gobgp.Path path) {
+        blockingStub.deletePath(Gobgp.DeletePathRequest.newBuilder().setTableType(Gobgp.TableType.GLOBAL).setPath(path).build());
+    }
+
+    private static final String target = "localhost:50051";
+    public static void process(int arg) {
         ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         try {
             Client client = new Client(channel);
-            System.out.println("new Client !!");
-            client.process();
+            if(arg==0){
+                System.out.println("call addPath");
+                client.run_addPath(client.build_path());
+            }else{
+                System.out.println("call delPath");
+                client.run_delPath(client.build_path());
+            }
+            System.out.println("Done");
         }catch (Exception e){
+            e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        process(0); // addPath
+        // process(1); // delPath
+        System.out.println("done");
     }
 
 }
