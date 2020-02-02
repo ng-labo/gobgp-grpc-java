@@ -28,11 +28,11 @@ public class Client {
         newStub = GobgpApiGrpc.newStub(channel);
     }
     private Gobgp.Family family(int ver) {
-        return Gobgp.Family.newBuilder().setAfi(Gobgp.Family.Afi.AFI_IP).setSafi(Gobgp.Family.Safi.SAFI_FLOW_SPEC_UNICAST).build();
+        return Gobgp.Family.newBuilder().setAfi((ver==4) ? Gobgp.Family.Afi.AFI_IP : Gobgp.Family.Afi.AFI_IP6).setSafi(Gobgp.Family.Safi.SAFI_FLOW_SPEC_UNICAST).build();
     }
 
-    private List<Any> build_prefixes(List<Any> rules, int typeval, String ipv4addr) {
-        Attribute.FlowSpecIPPrefix f1 = Attribute.FlowSpecIPPrefix.newBuilder().setType(typeval).setPrefixLen(32).setPrefix(ipv4addr).build();
+    private List<Any> build_prefixes(List<Any> rules, int typeval, String ipaddr, int prefixlen) {
+        Attribute.FlowSpecIPPrefix f1 = Attribute.FlowSpecIPPrefix.newBuilder().setType(typeval).setPrefixLen(prefixlen).setPrefix(ipaddr).build();
         rules.add(Any.pack(f1));
         return rules;
     }
@@ -85,8 +85,8 @@ public class Client {
         // make nlri
         List<Any> rules = new java.util.ArrayList<Any>();
 
-        build_prefixes(rules, 1, "1.2.3.4");
-        build_prefixes(rules, 2, "5.6.7.8");
+        build_prefixes(rules, 1, "1.2.3.4", 32);
+        build_prefixes(rules, 2, "5.6.7.8", 32);
         build_rules(rules, 3, new long[] {1, 17});
         build_rules(rules, 4, new long[] {1, 1900, 1, 11211});
         Any nlri = build_nlri(rules);
