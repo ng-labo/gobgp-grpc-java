@@ -11,6 +11,7 @@
                  [com.google.protobuf/protobuf-java "3.11.0"]
                  [io.grpc/grpc-api "1.28.0"]
                  [io.grpc/grpc-core "1.28.0" :exclusions [io.grpc/grpc-api]]
+                 [io.grpc/grpc-netty-shaded "1.28.0" :exclusions [io.grpc/grpc-api io.grpc/grpc-core]]
                  [io.grpc/grpc-protobuf "1.28.0"]
                  [io.grpc/grpc-stub "1.28.0"]]
 
