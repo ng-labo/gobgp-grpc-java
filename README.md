@@ -22,3 +22,6 @@ Done
 nil
 ```
 
+### using sbt
+
+- `sbt assembly`
