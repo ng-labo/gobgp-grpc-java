@@ -11,10 +11,10 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <grpc.version>1.26.0</grpc.version>
+        <grpc.version>1.50.0</grpc.version>
         <os.plugin.version>1.6.2</os.plugin.version>
         <protobuf.plugin.version>0.6.1</protobuf.plugin.version>
-        <protoc.version>3.11.0</protoc.version>
+        <protoc.version>3.21.7</protoc.version>
     </properties>
 
     <dependencies>

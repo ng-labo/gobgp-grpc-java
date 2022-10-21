@@ -4,11 +4,11 @@ import com.google.protobuf.Any;
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import gobgpapi.GobgpApiGrpc;
+import apipb.GobgpApiGrpc;
 //import gobgpapi.GobgpApiGrpc.GobgpApiStub;
-import gobgpapi.GobgpApiGrpc.GobgpApiBlockingStub;
-import gobgpapi.Gobgp;
-import gobgpapi.Attribute;
+import apipb.GobgpApiGrpc.GobgpApiBlockingStub;
+import apipb.Gobgp;
+import apipb.Attribute;
 import java.util.List;
 
 public class Client {
@@ -75,7 +75,7 @@ public class Client {
 
         // retrive BgpResponse
         Gobgp.GetBgpResponse r = blockingStub.getBgp(Gobgp.GetBgpRequest.newBuilder().build());
-        int asn = r.getGlobal().getAs();
+        int asn = r.getGlobal().getAsn();
 
         // make nlri
         List<Any> rules = new java.util.ArrayList<Any>();

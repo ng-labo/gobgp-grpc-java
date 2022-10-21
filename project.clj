@@ -7,14 +7,14 @@
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}
 
-  :dependencies [[org.clojure/clojure "1.10.0"]
+  :dependencies [[org.clojure/clojure "1.11.1"]
                  [javax.annotation/javax.annotation-api "1.3.2"]
-                 [com.google.protobuf/protobuf-java "3.11.4"]
-                 [io.grpc/grpc-api "1.28.0"]
-                 [io.grpc/grpc-core "1.28.0" :exclusions [io.grpc/grpc-api]]
-                 [io.grpc/grpc-netty-shaded "1.28.0" :exclusions [io.grpc/grpc-api io.grpc/grpc-core]]
-                 [io.grpc/grpc-protobuf "1.28.0"]
-                 [io.grpc/grpc-stub "1.28.0"]]
+                 [com.google.protobuf/protobuf-java "3.21.7"]
+                 [io.grpc/grpc-api "1.50.1"]
+                 [io.grpc/grpc-core "1.50.1" :exclusions [io.grpc/grpc-api]]
+                 [io.grpc/grpc-netty-shaded "1.50.1" :exclusions [io.grpc/grpc-api io.grpc/grpc-core]]
+                 [io.grpc/grpc-protobuf "1.50.1"]
+                 [io.grpc/grpc-stub "1.50.1"]]
 
   :plugins [[lein-protoc "0.5.0"]
             [lein-cljfmt "0.6.7"]
@@ -25,7 +25,7 @@
   ; for lein-protoc
   :protoc-version "3.11.4"
   :proto-source-paths ["src/main/proto"]
-  :protoc-grpc {:version "1.28.0"}
+  :protoc-grpc {:version "1.50.1"}
   :proto-target-path "target/generated-sources/protobuf"
   :java-source-pathes ["target/generated-sources/protobuf"]
 
